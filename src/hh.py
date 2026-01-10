@@ -1,79 +1,56 @@
+from typing import Any
+
 import requests
 
-
-class HeadHunterAPI():
-    """
-    Класс для работы с API HeadHunter
-    """
-
-    def __init__(self):
-        """
-        Инициализация класса HeadHunterAPI
-        """
-        self.__url_vacancies = "https://api.hh.ru/vacancies"
-        self.__url_employers = "https://api.hh.ru/employers"
-        self.__headers = {"User-Agent": "HH-User-Agent"}
-        self.__params = {}
-        self.__vacancies = []
-
-    def load_vacancies(self) -> list:
-        """
-        Метод запроса вакансий с портала hh.ru в соотвествии с настройками пользователя
-        Реализация приватного абстрактного метода
-        :return: Список словарей с вакансиями
-        """
+def load_employers(employers) -> list[dict[str, Any]]:
+    temp_list_employers =[]
+    headers = {"User-Agent": "HH-User-Agent"}
+    url_employers = "https://api.hh.ru/employers"
+    for item in employers:
+        url_employer = url_employers + "/" + item
         try:
-            response = requests.get(self.__url, headers=self.__headers, params=self.__params)
+            response = requests.get(url_employer, headers=headers)
         except Exception as e:
             print(f"Проверьте соединение. Ошибка - {e}")
             return []
         if response.status_code == 200:
-            return response
+            temp_list_employers.append(response.json())
         else:
-            print(f"Ошибка подключения - {response.status_code}")
+            print(f"Работодатели - Ошибка подключения - {response.status_code}")
             return []
+    return temp_list_employers
 
-    def processing_vacancies(
-        self,
-        keyword: str = "",
-        search_field: str = "",
-        area: str = "",
-        period: int = 0,
-        salary: int = 0,
-        only_with_salary: bool = False,
-    ) -> list:
-        """
-        Метод формирования и обработки полученного ответа на запрос по вакансим с портала hh.ru
-        :param keyword: Ключевое слово для поиска
-        :param search_field: Поле по которому производится поиск
-        :param area: Регион поиска
-        :param period: Количество дней отбора
-        :param salary: Предполагаемая заработная плата
-        :param only_with_salary: Вывод вакансий в которых указана заработная плата
-        :return: Список словарей с вакансиями
-        """
-        if keyword != "":
-            self.__params["text"] = keyword
-        if search_field != "":
-            self.__params["search_field"] = search_field
-        if area != "":
-            self.__params["area"] = area
-        if period != 0:
-            self.__params["period"] = period
-        if salary != 0:
-            self.__params["salary"] = salary
-        self.__params["page"] = 0
-        self.__params["per_page"] = 10
-        self.__params["only_with_salary"] = only_with_salary
-        self.__params["currency"] = "RUR"
-        while self.__params.get("page") != 1:
-            response = self.load_vacancies()
+
+def load_vacancies(employers) -> list:
+    url = "https://api.hh.ru/vacancies"
+    vacancies = []
+    headers = {"User-Agent": "HH-User-Agent"}
+    params = {"page": 0, "per_page": 10, "only_with_salary": True, "currency": "RUR", "employer_id": ""}
+    for_item = 0
+    for item in employers:
+        for_item += 1
+        params["page"] = 0
+        params["employer_id"] = item
+        while params["page"] != 1:
+            try:
+                response = requests.get(url, headers=headers, params=params)
+            except Exception as e:
+                print(f"Проверьте соединение. Ошибка - {e}")
+                return []
             if response == []:
-                return self.__vacancies
-            vacancies = response.json()["items"]
-            self.__vacancies.extend(vacancies)
-            self.__params["page"] += 1
-        return self.__vacancies
+                break
+            if response.status_code == 200:
+                vacancies.append(response.json()["items"])
+            else:
+                print(f"Вакансии - Ошибка подключения - {response.status_code} - {response.text}")
+                return []
+            params["page"] += 1
+    return vacancies
+
+
+
+
+
 
 
 #   https://api.hh.ru/employers/1959252  -- запрос данных по работодателю
