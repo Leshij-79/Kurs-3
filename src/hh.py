@@ -1,20 +1,7 @@
-from abc import ABC, abstractmethod
-
 import requests
 
 
-class AbstraktHH(ABC):
-
-    @abstractmethod
-    def __load_vacancies(self):
-        pass
-
-    @abstractmethod
-    def processing_vacancies(self, keyword, search_field, area, period, salary, only_with_salary):
-        pass
-
-
-class HeadHunterAPI(AbstraktHH):
+class HeadHunterAPI():
     """
     Класс для работы с API HeadHunter
     """
@@ -23,12 +10,13 @@ class HeadHunterAPI(AbstraktHH):
         """
         Инициализация класса HeadHunterAPI
         """
-        self.__url = "https://api.hh.ru/vacancies"
+        self.__url_vacancies = "https://api.hh.ru/vacancies"
+        self.__url_employers = "https://api.hh.ru/employers"
         self.__headers = {"User-Agent": "HH-User-Agent"}
         self.__params = {}
         self.__vacancies = []
 
-    def _AbstraktHH__load_vacancies(self) -> list:
+    def load_vacancies(self) -> list:
         """
         Метод запроса вакансий с портала hh.ru в соотвествии с настройками пользователя
         Реализация приватного абстрактного метода
@@ -79,10 +67,14 @@ class HeadHunterAPI(AbstraktHH):
         self.__params["only_with_salary"] = only_with_salary
         self.__params["currency"] = "RUR"
         while self.__params.get("page") != 1:
-            response = self._AbstraktHH__load_vacancies()
+            response = self.load_vacancies()
             if response == []:
                 return self.__vacancies
             vacancies = response.json()["items"]
             self.__vacancies.extend(vacancies)
             self.__params["page"] += 1
         return self.__vacancies
+
+
+#   https://api.hh.ru/employers/1959252  -- запрос данных по работодателю
+#   https://api.hh.ru/vacancies?employer_id=1959252  -- запрос вакансий по организации
