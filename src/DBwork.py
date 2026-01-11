@@ -45,6 +45,7 @@ def create_database(database_name: str, params: dict):
             CREATE TABLE vacancies (
                 vacancies_id SERIAL PRIMARY KEY,
                 vacancy_id VARCHAR(10) NOT NULL,
+                employers_id int NOT NULL,
                 employer_id INT NOT NULL ,
                 name VARCHAR NOT NULL,
                 salary_from INT,
@@ -58,7 +59,7 @@ def create_database(database_name: str, params: dict):
                 schedule_name VARCHAR,
                 work_format_name VARCHAR,
                 experience_name VARCHAR,
-                FOREIGN KEY (employer_id) REFERENCES employers (employers_id) ON DELETE CASCADE
+                FOREIGN KEY (employers_id) REFERENCES employers (employers_id) ON DELETE CASCADE
             )
         """)
     conn.commit()
@@ -72,27 +73,34 @@ def save_data_to_database(list_object_employers: list, list_object_vacancies: li
 
     with conn.cursor() as cur:
         for employer in list_object_employers:
+            emp_id = employer["id"]
             cur.execute(
                 """
-                INSERT INTO employers (title, views, subscribers, videos, channel_url)
-                VALUES (%s, %s, %s, %s, %s)
-                RETURNING channel_id
+                INSERT INTO employers (employer_id, name, description, site_url, alternate_url, vacancies_url, 
+                                       open_vacancies)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                RETURNING employers_id
                 """,
-                (channel_data['title'], channel_stats['viewCount'], channel_stats['subscriberCount'],
-                 channel_stats['videoCount'], f"https://www.youtube.com/channel/{channel['channel']['id']}")
+                (employer["id"], employer["name"], employer["description"], employer["site_url"],
+                 employer["alternate_url"], employer["vacancies_url"], employer["open_vacancies"])
             )
-            channel_id = cur.fetchone()[0]
-            videos_data = channel['videos']
-            for video in videos_data:
-                video_data = video['snippet']
-                cur.execute(
-                    """
-                    INSERT INTO videos (channel_id, title, publish_date, video_url)
-                    VALUES (%s, %s, %s, %s)
-                    """,
-                    (channel_id, video_data['title'], video_data['publishedAt'],
-                     f"https://www.youtube.com/watch?v={video['id']['videoId']}")
-                )
+            employers_id = cur.fetchone()[0]
+            for vacancy in list_object_vacancies:
+                if vacancy['employer_id'] == emp_id:
+                    cur.execute(
+                        """
+                        INSERT INTO vacancies (vacancy_id, employers_id, employer_id, name, salary_from, salary_to, 
+                                               salary_currency, area_name, published_at, alternate_url, 
+                                               snippet_requirement, snippet_responsibility, schedule_name, 
+                                               work_format_name, experience_name)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """,
+                        (vacancy['id'], employers_id, vacancy['employer_id'], vacancy["name"],
+                         vacancy["salary_from"], vacancy["salary_to"], vacancy["salary_currency"],
+                         vacancy["area_name"], vacancy["published_at"], vacancy["alternate_url"],
+                         vacancy["snippet_requirement"], vacancy["snippet_responsibility"], vacancy["schedule_name"],
+                         vacancy["work_format_name"], vacancy["experience_name"])
+                    )
 
     conn.commit()
     conn.close()

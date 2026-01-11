@@ -6,18 +6,20 @@ class Vacancy:
     Класс вакансий
     """
 
-    __slots__ = ('id', 'employer_id', 'name', 'salary_from', 'salary_to', 'area', 'published_at', 'alternate_url',
-                 'snippet_requirement', 'snippet_responsibility', 'work_format', 'experience')
+    __slots__ = ('id', 'employer_id', 'name', 'salary_from', 'salary_to', 'salary_currency', 'area', 'published_at',
+                 'alternate_url', 'snippet_requirement', 'snippet_responsibility', 'work_format', 'experience',
+                 'schedule_name')
 
     def __init__(
         self, id: str, employer: dict, name: str, salary: dict, area: dict, published_at: datetime, alternate_url: str,
-            snippet: dict, work_format: list, experience: dict):
+            snippet: dict, work_format: list, experience: dict, schedule: dict):
 
         self.id = id
         self.employer_id = employer['id']
         self.name = name
         self.salary_from = self.__salary_from(salary)
         self.salary_to = self.__salary_to(salary)
+        self.salary_currency = salary['currency']
         self.area = area["name"]
         self.published_at = published_at
         self.alternate_url = alternate_url
@@ -25,6 +27,7 @@ class Vacancy:
         self.snippet_responsibility = snippet['responsibility']
         self.work_format = self.__work_format(work_format)
         self.experience = experience['name']
+        self.schedule_name = schedule['name']
 
 
     @staticmethod
@@ -42,13 +45,15 @@ class Vacancy:
             temp_dict["name"] = item.name
             temp_dict["salary_from"] = item.salary_from
             temp_dict["salary_to"] = item.salary_to
-            temp_dict["area"] = item.area
+            temp_dict["salary_currency"] = item.salary_currency
+            temp_dict["area_name"] = item.area
             temp_dict["published_at"] = item.published_at
             temp_dict["alternate_url"] = item.alternate_url
             temp_dict["snippet_requirement"] = item.snippet_requirement
             temp_dict["snippet_responsibility"] = item.snippet_responsibility
-            temp_dict["work_format"] = item.work_format
-            temp_dict["experience"] = item.experience
+            temp_dict["work_format_name"] = item.work_format
+            temp_dict["experience_name"] = item.experience
+            temp_dict["schedule_name"] = item.schedule_name
             list_of_vacancies.append(temp_dict)
         return list_of_vacancies
 
@@ -117,5 +122,5 @@ class Vacancy:
             f"URL вакансии - {self.alternate_url}, Опубликовано - {self.published_at},\n"
             f"Описание вакансии - {self.snippet_requirement},\n"
             f"Требование по вакансии - {self.snippet_responsibility},\n"
-            f"Формат работы - {self.work_format}, Опыт работы - {self.experience}"
+            f"Формат работы - {self.work_format}, График работы - {self.schedule_name}, Опыт работы - {self.experience}"
         )

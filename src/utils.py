@@ -1,13 +1,8 @@
-from typing import Any
-
-import psycopg2
-import requests
-
 from src.employers import Employers
 from src.vacancies import Vacancy
 
 
-def list_to_object_vacancies(vacancies: list[dict]) -> list[Vacancy]:
+def list_to_object_vacancies(vacancies: list[list[dict]]) -> list[Vacancy]:
     list_of_vacancies = []
     for vacancy in vacancies:
         for vacancy_ in vacancy:
@@ -24,7 +19,8 @@ def list_to_object_vacancies(vacancies: list[dict]) -> list[Vacancy]:
                     vacancy_["alternate_url"],
                     vacancy_["snippet"],
                     vacancy_["work_format"],
-                    vacancy_["experience"]
+                    vacancy_["experience"],
+                    vacancy_["schedule"]
                 )
             )
     return list_of_vacancies

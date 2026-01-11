@@ -25,7 +25,7 @@ def load_vacancies(employers) -> list[list[dict[str, Any]]]:
     url = "https://api.hh.ru/vacancies"
     vacancies = []
     headers = {"User-Agent": "HH-User-Agent"}
-    params = {"page": 0, "per_page": 10, "only_with_salary": True, "currency": "RUR", "employer_id": ""}
+    params = {"page": 0, "per_page": 100, "only_with_salary": True, "currency": "RUR", "employer_id": ""}
     for_item = 0
     for item in employers:
         for_item += 1
