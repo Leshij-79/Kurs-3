@@ -9,14 +9,14 @@ from src.vacancies import Vacancy
 def main(list_employers=None):
     list_employers =['2180','2748','3529','8884','1959252','68587','1740','3192913','9498112','2523']
     params = db_config()
-    # create_database('vacancies', params)
-    # list_of_employers = load_employers(list_employers)
-    # list_of_vacancies = load_vacancies(list_employers)
-    # list_object_employers = list_to_object_employers(list_of_employers)
-    # list_object_vacancies = list_to_object_vacancies(list_of_vacancies)
-    # save_data_to_database(Employers.cast_to_object_list(list_object_employers),
-    #                       Vacancy.cast_to_object_list(list_object_vacancies),
-    #                       'vacancies', params)
+    create_database('vacancies', params)
+    list_of_employers = load_employers(list_employers)
+    list_of_vacancies = load_vacancies(list_employers)
+    list_object_employers = list_to_object_employers(list_of_employers)
+    list_object_vacancies = list_to_object_vacancies(list_of_vacancies)
+    save_data_to_database(Employers.cast_to_object_list(list_object_employers),
+                          Vacancy.cast_to_object_list(list_object_vacancies),
+                          'vacancies', params)
 
 
 if __name__ == '__main__':
