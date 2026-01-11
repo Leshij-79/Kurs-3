@@ -29,15 +29,31 @@ class DBManager:
 
 
     def get_avg_salary(self):
-        #  получает среднюю зарплату по вакансиям.
-        pass
+        conn = psycopg2.connect(dbname=self.__database, **self.__params)
+        with conn.cursor() as cur:
+            cur.execute('SELECT AVG(salary_from), AVG(salary_to) FROM vacancies')
+            avg_salary = cur.fetchall()
+        conn.close()
+        return avg_salary
+
 
 
     def get_vacancies_with_higher_salary(self):
-        #  получает список всех вакансий, у которых зарплата выше средней по всем вакансиям.
-        pass
+        conn = psycopg2.connect(dbname=self.__database, **self.__params)
+        with conn.cursor() as cur:
+            cur.execute('SELECT name FROM vacancies '
+                        'WHERE salary_from > (SELECT AVG(salary_from) FROM vacancies) '
+                        'AND salary_to > (SELECT AVG(salary_to) FROM vacancies)')
+            vacancies_with_higher_salary = cur.fetchall()
+        conn.close()
+        return vacancies_with_higher_salary
 
 
-    def get_vacancies_with_keyword(self):
+    def get_vacancies_with_keyword(self, keyword):
         #  получает список всех вакансий, в названии которых содержатся переданные в метод слова, например python.
-        pass
+        conn = psycopg2.connect(dbname=self.__database, **self.__params)
+        with conn.cursor() as cur:
+            cur.execute(f'SELECT name FROM vacancies WHERE name LIKE \'%{keyword}%\'')
+            vacancies_with_keyword = cur.fetchall()
+        conn.close()
+        return vacancies_with_keyword

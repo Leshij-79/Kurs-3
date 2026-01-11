@@ -17,8 +17,8 @@ class Vacancy:
         self.id = id
         self.employer_id = employer['id']
         self.name = name
-        self.salary_from = self.__salary_from(salary)
-        self.salary_to = self.__salary_to(salary)
+        self.salary_from = salary['from']  #  self.__salary_from(salary)
+        self.salary_to = salary['to']  #  self.__salary_to(salary)
         self.salary_currency = salary['currency']
         self.area = area["name"]
         self.published_at = published_at
