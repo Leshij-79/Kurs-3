@@ -21,7 +21,7 @@ def load_employers(employers) -> list[dict[str, Any]]:
     return temp_list_employers
 
 
-def load_vacancies(employers) -> list:
+def load_vacancies(employers) -> list[list[dict[str, Any]]]:
     url = "https://api.hh.ru/vacancies"
     vacancies = []
     headers = {"User-Agent": "HH-User-Agent"}
@@ -46,12 +46,6 @@ def load_vacancies(employers) -> list:
                 return []
             params["page"] += 1
     return vacancies
-
-
-
-
-
-
 
 #   https://api.hh.ru/employers/1959252  -- запрос данных по работодателю
 #   https://api.hh.ru/vacancies?employer_id=1959252  -- запрос вакансий по организации
