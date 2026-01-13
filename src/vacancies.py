@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 
 class Vacancy:
@@ -6,29 +7,52 @@ class Vacancy:
     Класс вакансий
     """
 
-    __slots__ = ('id', 'employer_id', 'name', 'salary_from', 'salary_to', 'salary_currency', 'area', 'published_at',
-                 'alternate_url', 'snippet_requirement', 'snippet_responsibility', 'work_format', 'experience',
-                 'schedule_name')
+    __slots__ = (
+        "id",
+        "employer_id",
+        "name",
+        "salary_from",
+        "salary_to",
+        "salary_currency",
+        "area",
+        "published_at",
+        "alternate_url",
+        "snippet_requirement",
+        "snippet_responsibility",
+        "work_format",
+        "experience",
+        "schedule_name",
+    )
 
     def __init__(
-        self, id: str, employer: dict, name: str, salary: dict, area: dict, published_at: datetime, alternate_url: str,
-            snippet: dict, work_format: list, experience: dict, schedule: dict):
+        self,
+        id: str,
+        employer: dict,
+        name: str,
+        salary: dict,
+        area: dict,
+        published_at: datetime,
+        alternate_url: str,
+        snippet: dict,
+        work_format: list,
+        experience: dict,
+        schedule: dict,
+    ):
 
         self.id = id
-        self.employer_id = employer['id']
+        self.employer_id = employer["id"]
         self.name = name
-        self.salary_from = salary['from']  #  self.__salary_from(salary)
-        self.salary_to = salary['to']  #  self.__salary_to(salary)
-        self.salary_currency = salary['currency']
+        self.salary_from = salary["from"]
+        self.salary_to = salary["to"]
+        self.salary_currency = salary["currency"]
         self.area = area["name"]
         self.published_at = published_at
         self.alternate_url = alternate_url
-        self.snippet_requirement = snippet['requirement']
-        self.snippet_responsibility = snippet['responsibility']
+        self.snippet_requirement = snippet["requirement"]
+        self.snippet_responsibility = snippet["responsibility"]
         self.work_format = self.__work_format(work_format)
-        self.experience = experience['name']
-        self.schedule_name = schedule['name']
-
+        self.experience = experience["name"]
+        self.schedule_name = schedule["name"]
 
     @staticmethod
     def cast_to_object_list(vacancies: list) -> list[dict]:
@@ -57,30 +81,6 @@ class Vacancy:
             list_of_vacancies.append(temp_dict)
         return list_of_vacancies
 
-
-    def __salary_from(self, salary: dict) -> int:
-        """
-        Приватный метод обработки заработной платы от
-        :param salary: Заработная плата в формате словаря
-        :return: Заработная плата в формате целого числа
-        """
-        if salary["from"]:
-            return salary["from"]
-        else:
-            return 0
-
-
-    def __salary_to(self, salary: dict) -> int:
-        """
-        Приватный метод обработки заработной платы от
-        :param salary: Заработная плата в формате словаря
-        :return: Заработная плата в формате целого числа
-        """
-        if salary["to"]:
-            return salary["to"]
-        else:
-            return 9999999
-
     def __work_format(self, work_format: list[dict]) -> str:
         """
         Формирование формата работы по вакансии
@@ -92,23 +92,6 @@ class Vacancy:
         else:
             return work_format[0]["name"]
 
-    def __lt__(self, other):
-        return (self.salary_from < other.salary_from) or (self.salary_to < other.salary_to)
-
-    def __gt__(self, other):
-        return (self.salary_from > other.salary_from) or (self.salary_to > other.salary_to)
-
-    def __eq__(self, other):
-        return (self.salary_from == other.salary_from) or (self.salary_to == other.salary_to)
-
-    def __ne__(self, other):
-        return (self.salary_from != other.salary_from) or (self.salary_to != other.salary_to)
-
-    def __le__(self, other):
-        return (self.salary_from <= other.salary_from) or (self.salary_to <= other.salary_to)
-
-    def __ge__(self, other):
-        return (self.salary_from >= other.salary_from) or (self.salary_to >= other.salary_to)
 
     def __str__(self):
         """
@@ -122,5 +105,6 @@ class Vacancy:
             f"URL вакансии - {self.alternate_url}, Опубликовано - {self.published_at},\n"
             f"Описание вакансии - {self.snippet_requirement},\n"
             f"Требование по вакансии - {self.snippet_responsibility},\n"
-            f"Формат работы - {self.work_format}, График работы - {self.schedule_name}, Опыт работы - {self.experience}"
+            f"Формат работы - {self.work_format}, График работы - {self.schedule_name}, "
+            f"Опыт работы - {self.experience}"
         )

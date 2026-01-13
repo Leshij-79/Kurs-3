@@ -2,8 +2,9 @@ from typing import Any
 
 import requests
 
-def load_employers(employers) -> list[dict[str, Any]]:
-    temp_list_employers =[]
+
+def load_employers(employers: list) -> list[dict[str, Any]]:
+    temp_list_employers = []
     headers = {"User-Agent": "HH-User-Agent"}
     url_employers = "https://api.hh.ru/employers"
     for item in employers:
@@ -21,7 +22,7 @@ def load_employers(employers) -> list[dict[str, Any]]:
     return temp_list_employers
 
 
-def load_vacancies(employers) -> list[list[dict[str, Any]]]:
+def load_vacancies(employers: list) -> list[list[dict[str, Any]]]:
     url = "https://api.hh.ru/vacancies"
     vacancies = []
     headers = {"User-Agent": "HH-User-Agent"}
@@ -46,6 +47,3 @@ def load_vacancies(employers) -> list[list[dict[str, Any]]]:
                 return []
             params["page"] += 1
     return vacancies
-
-#   https://api.hh.ru/employers/1959252  -- запрос данных по работодателю
-#   https://api.hh.ru/vacancies?employer_id=1959252  -- запрос вакансий по организации

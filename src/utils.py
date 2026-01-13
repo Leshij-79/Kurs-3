@@ -20,7 +20,7 @@ def list_to_object_vacancies(vacancies: list[list[dict]]) -> list[Vacancy]:
                     vacancy_["snippet"],
                     vacancy_["work_format"],
                     vacancy_["experience"],
-                    vacancy_["schedule"]
+                    vacancy_["schedule"],
                 )
             )
     return list_of_vacancies
@@ -37,9 +37,7 @@ def list_to_object_employers(employers: list[dict]) -> list[Employers]:
                 employer["site_url"],
                 employer["alternate_url"],
                 employer["vacancies_url"],
-                employer["open_vacancies"]
+                employer["open_vacancies"],
             )
         )
     return list_of_employers
-
-
