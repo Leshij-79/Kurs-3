@@ -1,88 +1,59 @@
-from abc import ABC, abstractmethod
+from typing import Any
 
 import requests
 
 
-class AbstraktHH(ABC):
-
-    @abstractmethod
-    def __load_vacancies(self):
-        pass
-
-    @abstractmethod
-    def processing_vacancies(self, keyword, search_field, area, period, salary, only_with_salary):
-        pass
-
-
-class HeadHunterAPI(AbstraktHH):
+def load_employers(employers: list) -> list[dict[str, Any]]:
     """
-    Класс для работы с API HeadHunter
+    Функция получения данных по работодателям с портала hh.ru через API-запрос
+    :param employers: Список ID работодателей на портале hh.ru
+    :return: Список словарей с даными по работодателям
     """
-
-    def __init__(self):
-        """
-        Инициализация класса HeadHunterAPI
-        """
-        self.__url = "https://api.hh.ru/vacancies"
-        self.__headers = {"User-Agent": "HH-User-Agent"}
-        self.__params = {}
-        self.__vacancies = []
-
-    def _AbstraktHH__load_vacancies(self) -> list:
-        """
-        Метод запроса вакансий с портала hh.ru в соотвествии с настройками пользователя
-        Реализация приватного абстрактного метода
-        :return: Список словарей с вакансиями
-        """
+    temp_list_employers = []
+    headers = {"User-Agent": "HH-User-Agent"}
+    url_employers = "https://api.hh.ru/employers"
+    for item in employers:
+        url_employer = url_employers + "/" + item
         try:
-            response = requests.get(self.__url, headers=self.__headers, params=self.__params)
+            response = requests.get(url_employer, headers=headers)
         except Exception as e:
             print(f"Проверьте соединение. Ошибка - {e}")
             return []
         if response.status_code == 200:
-            return response
+            temp_list_employers.append(response.json())
         else:
-            print(f"Ошибка подключения - {response.status_code}")
+            print(f"Работодатели - Ошибка подключения - {response.status_code}")
             return []
+    return temp_list_employers
 
-    def processing_vacancies(
-        self,
-        keyword: str = "",
-        search_field: str = "",
-        area: str = "",
-        period: int = 0,
-        salary: int = 0,
-        only_with_salary: bool = False,
-    ) -> list:
-        """
-        Метод формирования и обработки полученного ответа на запрос по вакансим с портала hh.ru
-        :param keyword: Ключевое слово для поиска
-        :param search_field: Поле по которому производится поиск
-        :param area: Регион поиска
-        :param period: Количество дней отбора
-        :param salary: Предполагаемая заработная плата
-        :param only_with_salary: Вывод вакансий в которых указана заработная плата
-        :return: Список словарей с вакансиями
-        """
-        if keyword != "":
-            self.__params["text"] = keyword
-        if search_field != "":
-            self.__params["search_field"] = search_field
-        if area != "":
-            self.__params["area"] = area
-        if period != 0:
-            self.__params["period"] = period
-        if salary != 0:
-            self.__params["salary"] = salary
-        self.__params["page"] = 0
-        self.__params["per_page"] = 10
-        self.__params["only_with_salary"] = only_with_salary
-        self.__params["currency"] = "RUR"
-        while self.__params.get("page") != 1:
-            response = self._AbstraktHH__load_vacancies()
+
+def load_vacancies(employers: list) -> list[list[dict[str, Any]]]:
+    """
+    Функция получения данных по вакансиям с портала hh.ru через API-запрос
+    :param employers: Список ID работодателей
+    :return: Список списков словарей с вакансиями работодателей
+    """
+    url = "https://api.hh.ru/vacancies"
+    vacancies = []
+    headers = {"User-Agent": "HH-User-Agent"}
+    params = {"page": 0, "per_page": 100, "only_with_salary": False, "currency": "RUR", "employer_id": ""}
+    for_item = 0
+    for item in employers:
+        for_item += 1
+        params["page"] = 0
+        params["employer_id"] = item
+        while params["page"] != 1:
+            try:
+                response = requests.get(url, headers=headers, params=params)
+            except Exception as e:
+                print(f"Проверьте соединение. Ошибка - {e}")
+                return []
             if response == []:
-                return self.__vacancies
-            vacancies = response.json()["items"]
-            self.__vacancies.extend(vacancies)
-            self.__params["page"] += 1
-        return self.__vacancies
+                break
+            if response.status_code == 200:
+                vacancies.append(response.json()["items"])
+            else:
+                print(f"Вакансии - Ошибка подключения - {response.status_code} - {response.text}")
+                return []
+            params["page"] += 1
+    return vacancies
