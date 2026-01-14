@@ -4,6 +4,11 @@ import requests
 
 
 def load_employers(employers: list) -> list[dict[str, Any]]:
+    """
+    Функция получения данных по работодателям с портала hh.ru через API-запрос
+    :param employers: Список ID работодателей на портале hh.ru
+    :return: Список словарей с даными по работодателям
+    """
     temp_list_employers = []
     headers = {"User-Agent": "HH-User-Agent"}
     url_employers = "https://api.hh.ru/employers"
@@ -23,6 +28,11 @@ def load_employers(employers: list) -> list[dict[str, Any]]:
 
 
 def load_vacancies(employers: list) -> list[list[dict[str, Any]]]:
+    """
+    Функция получения данных по вакансиям с портала hh.ru через API-запрос
+    :param employers: Список ID работодателей
+    :return: Список списков словарей с вакансиями работодателей
+    """
     url = "https://api.hh.ru/vacancies"
     vacancies = []
     headers = {"User-Agent": "HH-User-Agent"}

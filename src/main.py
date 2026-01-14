@@ -8,6 +8,9 @@ from src.vacancies import Vacancy
 
 
 def main() -> None:
+    """
+    Основная функция запуска функционала проекта с выводом получаемой информации
+    """
     list_employers = ["2180", "2748", "3529", "8884", "1959252", "68587", "1740", "3192913", "9498112", "2523"]
     params = db_config()
     create_database("vacancies", params)

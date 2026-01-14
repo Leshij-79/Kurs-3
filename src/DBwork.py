@@ -2,6 +2,11 @@ import psycopg2
 
 
 def create_database(database_name: str, params: dict) -> None:
+    """
+    Функция создания БД и таблиц БД
+    :param database_name: Имя БД
+    :param params: Параметры подключения к БД
+    """
     try:
         conn = psycopg2.connect(database="postgres", **params, connect_timeout=5)
         conn.autocommit = True
@@ -73,9 +78,15 @@ def create_database(database_name: str, params: dict) -> None:
     conn.close()
 
 
-def save_data_to_database(list_object_employers: list, list_object_vacancies: list, database_name: str,
-                          params: dict) -> None:
-    """Сохранение данных о каналах и видео в базу данных."""
+def save_data_to_database(list_object_employers: list[dict], list_object_vacancies: list[list[dict]],
+                          database_name: str, params: dict) -> None:
+    """
+    Функция записи данных по работодателям и их вакансиям в БД
+    :param list_object_employers: Список словарей с данными по работодателям
+    :param list_object_vacancies: Список списков словарей с данными по вакансиям работодателей
+    :param database_name: Имя БД
+    :param params: Параметры подключения к БД
+    """
 
     conn = psycopg2.connect(dbname=database_name, **params)
 

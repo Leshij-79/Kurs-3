@@ -37,7 +37,21 @@ class Vacancy:
         work_format: list,
         experience: dict,
         schedule: dict,
-    ):
+    ) -> None:
+        """
+        Метод инициализации класса вакансий
+        :param id: ID вакансии
+        :param employer: ID работодателя
+        :param name: Наименование вакансии
+        :param salary: Словарь с данными по зарплате по вакансии
+        :param area: Территория/регион вакансии
+        :param published_at: Дата оупбликования вакансии
+        :param alternate_url: Ссылка на вакансию на портале рh.ru
+        :param snippet: Словарь с описанием и требованиями по вакансии
+        :param work_format: Словарь с форматом работы
+        :param experience: Словарь по требованию опыта по вакансии
+        :param schedule: Словарь с видом работы
+        """
 
         self.id = id
         self.employer_id = employer["id"]

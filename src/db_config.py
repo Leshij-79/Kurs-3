@@ -2,6 +2,12 @@ from configparser import ConfigParser
 
 
 def db_config(filename: str = "database.ini", section: str = "postgresql") -> dict:
+    """
+    Функция чтения файла настройки подключения к БД
+    :param filename:  Имя файла настройки доступа к БД
+    :param section: Искомая секция файла настройки
+    :return: Словарь параметров подключения к БД
+    """
     parser = ConfigParser()
     parser.read(filename)
     db = {}

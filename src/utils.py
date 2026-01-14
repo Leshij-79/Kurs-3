@@ -3,6 +3,11 @@ from src.vacancies import Vacancy
 
 
 def list_to_object_vacancies(vacancies: list[list[dict]]) -> list[Vacancy]:
+    """
+    Функция формирования списка объектов класса Vacancy
+    :param vacancies: Список списков словарей с данными по вакансиям
+    :return: Список объектов класса Vacancy
+    """
     list_of_vacancies = []
     for vacancy in vacancies:
         for vacancy_ in vacancy:
@@ -27,6 +32,11 @@ def list_to_object_vacancies(vacancies: list[list[dict]]) -> list[Vacancy]:
 
 
 def list_to_object_employers(employers: list[dict]) -> list[Employers]:
+    """
+    Функция формирования списка объектов класса Employers
+    :param employers: Список словарей с данными по работодателям
+    :return: Список объектов класса Employers
+    """
     list_of_employers = []
     for employer in employers:
         list_of_employers.append(
