@@ -1,42 +1,53 @@
-import psycopg2
+from src.employers import Employers
+from src.vacancies import Vacancy
 
 
-def create_database(database_name: str, params: dict):
-    """Создание базы данных и таблиц для сохранения данных о каналах и видео."""
-
-    conn = psycopg2.connect(dbname='postgres', **params)
-    conn.autocommit = True
-    cur = conn.cursor()
-
-    cur.execute(f"DROP DATABASE {database_name}")
-    cur.execute(f"CREATE DATABASE {database_name}")
-
-    conn.close()
-
-    conn = psycopg2.connect(dbname=database_name, **params)
-
-    with conn.cursor() as cur:
-        cur.execute("""
-            CREATE TABLE channels (
-                channel_id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                views INTEGER,
-                subscribers INTEGER,
-                videos INTEGER,
-                channel_url TEXT
+def list_to_object_vacancies(vacancies: list[list[dict]]) -> list[Vacancy]:
+    """
+    Функция формирования списка объектов класса Vacancy
+    :param vacancies: Список списков словарей с данными по вакансиям
+    :return: Список объектов класса Vacancy
+    """
+    list_of_vacancies = []
+    for vacancy in vacancies:
+        for vacancy_ in vacancy:
+            if vacancy_["salary"] is None:
+                vacancy_["salary"] = {"from": None, "to": None, "currency": "RUR", "gross": False}
+            list_of_vacancies.append(
+                Vacancy(
+                    vacancy_["id"],
+                    vacancy_["employer"],
+                    vacancy_["name"],
+                    vacancy_["salary"],
+                    vacancy_["area"],
+                    vacancy_["published_at"],
+                    vacancy_["alternate_url"],
+                    vacancy_["snippet"],
+                    vacancy_["work_format"],
+                    vacancy_["experience"],
+                    vacancy_["schedule"],
+                )
             )
-        """)
+    return list_of_vacancies
 
-    with conn.cursor() as cur:
-        cur.execute("""
-            CREATE TABLE videos (
-                video_id SERIAL PRIMARY KEY,
-                channel_id INT REFERENCES channels(channel_id),
-                title VARCHAR NOT NULL,
-                publish_date DATE,
-                video_url TEXT
+
+def list_to_object_employers(employers: list[dict]) -> list[Employers]:
+    """
+    Функция формирования списка объектов класса Employers
+    :param employers: Список словарей с данными по работодателям
+    :return: Список объектов класса Employers
+    """
+    list_of_employers = []
+    for employer in employers:
+        list_of_employers.append(
+            Employers(
+                employer["id"],
+                employer["name"],
+                employer["description"],
+                employer["site_url"],
+                employer["alternate_url"],
+                employer["vacancies_url"],
+                employer["open_vacancies"],
             )
-        """)
-
-    conn.commit()
-    conn.close()
+        )
+    return list_of_employers
